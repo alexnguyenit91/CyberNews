@@ -1,0 +1,44 @@
+name: Daily News Digest
+
+on:
+  schedule:
+    # Lịch chạy được tính theo giờ UTC. UTC+7 là giờ Việt Nam.
+    - cron: '0 0 * * *'   # Chạy vào 00:00 UTC (7:00 sáng VN)
+    - cron: '0 5 * * *'   # Chạy vào 05:00 UTC (12:00 trưa VN)
+    - cron: '0 10 * * *'  # Chạy vào 10:00 UTC (17:00 chiều VN)
+  workflow_dispatch: # Cho phép chạy thủ công từ giao diện GitHub
+
+jobs:
+  build-and-send:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
+        run: python main.py
+
+      - name: Commit timestamp file
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add last_run_timestamp.txt
+          git commit -m "Update last run timestamp" || echo "No changes to commit"
+          git push
