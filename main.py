@@ -33,8 +33,7 @@ RSS_FEEDS = [
     {'name': 'Bleeping Computer', 'url': 'https://www.bleepingcomputer.com/feed/'},
     {'name': 'Cyberpress', 'url': 'https://cyberpress.org/feed/'},
     {'name': 'Security Online', 'url': 'https://securityonline.info/feed/'},
-    {'name': 'SecurityWeek', 'url': 'http://feeds.feedburner.com/Securityweek'},
-    {'name': 'Dark Reading', 'url': 'https://www.darkreading.com/rss.xml'}
+    {'name': 'SecurityWeek', 'url': 'http://feeds.feedburner.com/Securityweek'}
 ]
 
 
