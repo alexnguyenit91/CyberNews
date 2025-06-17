@@ -199,8 +199,8 @@ def main():
                         """
                         summaries_html_list.append(article_block_html)
                         
-                        print("    -> Tạm nghỉ 35 giây để chờ lượt API tiếp theo...")
-                        time.sleep(35) 
+                        print("    -> Tạm nghỉ 15 giây để chờ lượt API tiếp theo...")
+                        time.sleep(15) 
                     else:
                         time.sleep(1)
         except Exception as e:
