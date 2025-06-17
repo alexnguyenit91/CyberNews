@@ -96,7 +96,7 @@ def summarize_with_gemini(text_content, article_title):
 
     prompt = f"""
     Bạn là một chuyên gia phân tích an ninh mạng. Hãy phân tích nội dung bài báo có tiêu đề "{article_title}" và tóm tắt lại theo định dạng HTML nghiêm ngặt dưới đây.
-    Chỉ trả về mã HTML của phần div, không thêm bất kỳ văn bản nào khác hay giải thích gì. Lưu ý tất cả bài viết phải được dịch ra tiếng Việt hoàn toàn.
+    Chỉ trả về mã HTML của phần div, không thêm bất kỳ văn bản nào khác hay giải thích gì. Lưu ý bài viết liên quan tới lỗ hổng bảo mật và phải được dịch ra tiếng Việt hoàn toàn
 
     NỘI DUNG BÀI BÁO:
     {text_content[:8000]}
