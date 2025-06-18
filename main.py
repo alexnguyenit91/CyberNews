@@ -92,7 +92,7 @@ def summarize_with_gemini(text_content, article_title):
     print("  ...Gửi cho AI tóm tắt và định dạng...")
     
     # Sử dụng model flash để tối ưu tốc độ và chi phí
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 
     prompt = f"""
     Bạn là một chuyên gia phân tích an ninh mạng. Hãy phân tích nội dung bài báo có tiêu đề "{article_title}" và tóm tắt lại theo định dạng HTML nghiêm ngặt dưới đây.
