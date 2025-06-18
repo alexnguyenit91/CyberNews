@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# --- BƯỚC 1: NHẬP CÁC "BẢN VẼ" VÀ "CÔNG CỤ" ---
+# --- BƯỚC 1: NHẬP CÁC THƯ VIỆN CẦN THIẾT ---
 import os
 import smtplib
 import feedparser
@@ -27,13 +27,14 @@ SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL")
 
-# Danh sách các "quầy báo" (RSS feed) mà chúng ta sẽ ghé thăm
+# Danh sách các "quầy báo" (RSS feed)
 RSS_FEEDS = [
     {'name': 'The Hacker News', 'url': 'https://feeds.feedburner.com/TheHackersNews'},
     {'name': 'Bleeping Computer', 'url': 'https://www.bleepingcomputer.com/feed/'},
     {'name': 'Cyberpress', 'url': 'https://cyberpress.org/feed/'},
     {'name': 'Security Online', 'url': 'https://securityonline.info/feed/'},
-    {'name': 'SecurityWeek', 'url': 'http://feeds.feedburner.com/Securityweek'}
+    {'name': 'SecurityWeek', 'url': 'http://feeds.feedburner.com/Securityweek'},
+    {'name': 'Dark Reading', 'url': 'https://www.darkreading.com/rss.xml'}
 ]
 
 
@@ -41,7 +42,7 @@ RSS_FEEDS = [
 
 def get_article_text(url):
     """
-    "Công nhân" này chỉ cố gắng lấy nội dung trực tiếp bằng requests.
+    Hàm này chỉ cố gắng lấy nội dung trực tiếp bằng requests.
     Nếu thất bại vì bất kỳ lý do gì, nó sẽ trả về None và bỏ qua.
     """
     print(f"  ...Thử lấy trực tiếp từ: {url[:70]}...")
@@ -76,7 +77,7 @@ def get_article_text(url):
                 return full_text
         
         # Nếu không có main_content hoặc text quá ngắn, nó sẽ đi xuống và trả về None
-        print(f"    -> Lấy trực tiếp thất bại (không tìm thấy selector '{selector}' hoặc nội dung quá ngắn).")
+        print(f"    -> Lấy trực tiếp thất bại (không tìm thấy selector '{selector}' hoặc nội dung quá ngắn). Bỏ qua.")
         return None
 
     except Exception as e:
@@ -86,17 +87,16 @@ def get_article_text(url):
 
 def summarize_with_gemini(text_content, article_title):
     """
-    "Công nhân AI" này nhận văn bản thô, tóm tắt và định dạng nó thành một khối HTML đẹp mắt.
+    Tóm tắt và định dạng nội dung bằng AI.
     """
     print("  ...Gửi cho AI tóm tắt và định dạng...")
-    if not text_content or len(text_content) < 150:
-        return f"<p>Lỗi khi tóm tắt bài viết: Nội dung quá ngắn hoặc không lấy được - '{article_title}'</p>"
     
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    # Sử dụng model flash để tối ưu tốc độ và chi phí
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
     prompt = f"""
     Bạn là một chuyên gia phân tích an ninh mạng. Hãy phân tích nội dung bài báo có tiêu đề "{article_title}" và tóm tắt lại theo định dạng HTML nghiêm ngặt dưới đây.
-    Chỉ trả về mã HTML của phần div, không thêm bất kỳ văn bản nào khác hay giải thích gì. Lưu ý bài viết liên quan tới lỗ hổng bảo mật và phải được dịch ra tiếng Việt hoàn toàn
+    Chỉ trả về mã HTML của phần div, không thêm bất kỳ văn bản nào khác hay giải thích gì. Lưu ý tất cả bài viết phải được dịch ra tiếng Việt hoàn toàn.
 
     NỘI DUNG BÀI BÁO:
     {text_content[:8000]}
@@ -125,7 +125,7 @@ def summarize_with_gemini(text_content, article_title):
 
 def send_email(subject, html_body):
     """
-    "Người đưa thư" này chịu trách nhiệm gửi email tổng hợp đi.
+    Gửi email tổng hợp đi.
     """
     print("\nChuẩn bị gửi email tổng hợp...")
     msg = MIMEMultipart('alternative')
@@ -145,26 +145,22 @@ def send_email(subject, html_body):
         print(f"❌ Lỗi khi gửi email: {e}")
 
 
-# --- BƯỚC 4: "QUẢN ĐỐC" ĐIỀU PHỐI CÔNG VIỆC (PHIÊN BẢN CÓ TRÍ NHỚ) ---
-
+# --- BƯỚC 4: "QUẢN ĐỐC" ĐIỀU PHỐI CÔNG VIỆC ---
 def main():
     """Hàm chính, điều phối toàn bộ quy trình."""
     print("\n🚀 Bắt đầu ca làm việc! Lấy và tóm tắt tin tức...")
     
     TIMESTAMP_FILE = "last_run_timestamp.txt"
     current_run_timestamp = datetime.now(timezone.utc)
-    last_run_timestamp = datetime.fromtimestamp(0, tz=timezone.utc) # Mặc định lấy tin từ xa xưa
+    last_run_timestamp = datetime.fromtimestamp(0, tz=timezone.utc)
 
-    # Cố gắng đọc "trí nhớ" từ lần chạy trước
     try:
         with open(TIMESTAMP_FILE, "r") as f:
-            # Timestamp được lưu dưới dạng số giây từ Epoch
             timestamp_from_file = float(f.read().strip())
             last_run_timestamp = datetime.fromtimestamp(timestamp_from_file, tz=timezone.utc)
             print(f"Đã tìm thấy lần chạy trước, sẽ chỉ lấy tin tức sau: {last_run_timestamp.strftime('%Y-%m-%d %H:%M:%S %Z')}")
     except FileNotFoundError:
         print("Không tìm thấy file timestamp, đây là lần chạy đầu tiên. Sẽ lấy tin trong 24 giờ qua.")
-        # Nếu là lần đầu, chỉ lấy tin trong 24h để không bị quá tải
         last_run_timestamp = datetime.now(timezone.utc) - timedelta(days=1)
     except Exception as e:
         print(f"Lỗi khi đọc file timestamp, sẽ lấy tin trong 24 giờ qua. Lỗi: {e}")
@@ -180,7 +176,6 @@ def main():
             for entry in feed.entries:
                 published_time = datetime.fromtimestamp(time.mktime(entry.published_parsed), tz=timezone.utc)
 
-                # Chỉ lấy các bài viết mới hơn "trí nhớ"
                 if published_time > last_run_timestamp:
                     print(f"  📰 Phát hiện tin mới: {entry.title}")
                     
@@ -200,13 +195,16 @@ def main():
                         
                         print("    -> Tạm nghỉ 15 giây để chờ lượt API tiếp theo...")
                         time.sleep(15) 
-                    else:
-                        time.sleep(1)
         except Exception as e:
             print(f"  -> Lỗi khi xử lý RSS feed của {feed_info['name']}: {e}")
 
     if summaries_html_list:
-        run_time_str = datetime.now().strftime("%H:%M ngày %d/%m/%Y")
+        # Chuyển đổi thời gian sang múi giờ Việt Nam (GMT+7)
+        utc_now = datetime.now(timezone.utc)
+        gmt7 = timezone(timedelta(hours=7))
+        vn_time = utc_now.astimezone(gmt7)
+        run_time_str = vn_time.strftime("%H:%M ngày %d/%m/%Y")
+        
         subject = f"Bản tin An ninh mạng cập nhật lúc {run_time_str}"
         
         final_body = "<hr style='border: 0; border-top: 1px solid #eee;'>".join(summaries_html_list)
