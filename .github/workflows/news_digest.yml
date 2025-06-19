@@ -3,7 +3,7 @@ name: Daily News Digest
 on:
   schedule:
     # Lịch chạy được tính theo giờ UTC. UTC+7 là giờ Việt Nam.
-    - cron: '0 0 * * *'   # Chạy vào 00:00 UTC (7:00 sáng VN)
+    - cron: '0 1 * * *'   # Chạy vào 00:00 UTC (7:00 sáng VN)
     - cron: '0 5 * * *'   # Chạy vào 05:00 UTC (12:00 trưa VN)
     - cron: '0 10 * * *'  # Chạy vào 10:00 UTC (17:00 chiều VN)
   workflow_dispatch: # Cho phép chạy thủ công từ giao diện GitHub
