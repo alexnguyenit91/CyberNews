@@ -91,7 +91,7 @@ def summarize_with_gemini(text_content, article_title):
     MẪU ĐỊNH DẠNG HTML (sử dụng màu đỏ #d9534f cho mức độ nghiêm trọng):
     <div style="border-left: 4px solid #d9534f; padding-left: 15px; margin-bottom: 25px; background-color: #f9f9f9; padding: 5px 15px 15px 15px;">
         <p><strong>📝 Mô tả:</strong> [Mô tả ngắn gọn về lỗ hổng, sản phẩm bị ảnh hưởng và mã CVE. Nếu không phải tin về lỗ hổng thì mô tả sự kiện chính.]</p>
-        <p><strong>💥 Mức độ ảnh hưởng:</strong> <strong style="color: #d9534f;">[Đánh giá mức độ, ví dụ: Cao/Nghiêm trọng/Cảnh báo]</strong> [Hậu quả chính nếu bị khai thác hoặc tầm quan trọng của tin tức.].</p>
+        <p><strong>💥 Mức độ ảnh hưởng:</strong> <strong style="color: #d9534f;">[Đánh giá mức độ, ví dụ: /Nghiêm trọng/Cao/Trung bình/Thấp]</strong> [Hậu quả chính nếu bị khai thác hoặc tầm quan trọng của tin tức.].</p>
         <p><strong>✅ Hành động Đề xuất:</strong></p>
         <ul style="margin-top: -10px;"><li>[Hành động 1, ví dụ: Cập nhật bản vá X.]</li><li>[Hành động 2, nếu có, ví dụ: Rà soát hệ thống Y.]</li></ul>
     </div>"""
