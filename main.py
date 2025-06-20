@@ -30,7 +30,10 @@ RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL")
 # Lấy danh sách email Cc từ biến môi trường
 CC_RECIPIENT_EMAILS = os.getenv("CC_RECIPIENT_EMAILS", "")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
 # Danh sách các "quầy báo" (RSS feed)
 RSS_FEEDS = [
     {'name': 'The Hacker News', 'url': 'https://feeds.feedburner.com/TheHackersNews'},
@@ -45,7 +48,14 @@ RSS_FEEDS = [
 # --- BƯỚC 3: XÂY DỰNG CÁC "CÔNG NHÂN" CHUYÊN BIỆT ---
 
 def get_article_text(url):
+<<<<<<< HEAD
     """Chỉ cố gắng lấy nội dung trực tiếp bằng requests."""
+=======
+    """
+    Hàm này chỉ cố gắng lấy nội dung trực tiếp bằng requests.
+    Nếu thất bại vì bất kỳ lý do gì, nó sẽ trả về None và bỏ qua.
+    """
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
     print(f"  ...Thử lấy trực tiếp từ: {url[:70]}...")
     SITE_SELECTORS = {
         'thehackernews.com': 'div.articlebody',
@@ -69,6 +79,11 @@ def get_article_text(url):
             if len(full_text) > 150:
                 print("    -> Lấy trực tiếp thành công!")
                 return full_text
+<<<<<<< HEAD
+=======
+        
+        # Nếu không có main_content hoặc text quá ngắn, nó sẽ đi xuống và trả về None
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
         print(f"    -> Lấy trực tiếp thất bại (không tìm thấy selector '{selector}' hoặc nội dung quá ngắn). Bỏ qua.")
         return None
     except Exception as e:
@@ -76,11 +91,21 @@ def get_article_text(url):
         return None
 
 def summarize_with_gemini(text_content, article_title):
+<<<<<<< HEAD
     """Tóm tắt và định dạng nội dung bằng AI."""
     print("  ...Gửi cho AI tóm tắt và định dạng...")
     
     # Sử dụng model flash để tối ưu tốc độ và chi phí
     model = genai.GenerativeModel('gemini-1.5-flash')
+=======
+    """
+    Tóm tắt và định dạng nội dung bằng AI.
+    """
+    print("  ...Gửi cho AI tóm tắt và định dạng...")
+    
+    # Sử dụng model flash để tối ưu tốc độ và chi phí
+    model = genai.GenerativeModel('gemini-2.5-flash')
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
 
     prompt = f"""
     Bạn là một chuyên gia phân tích an ninh mạng. Hãy phân tích nội dung bài báo có tiêu đề "{article_title}" và tóm tắt lại theo định dạng HTML nghiêm ngặt dưới đây.
@@ -106,7 +131,11 @@ def summarize_with_gemini(text_content, article_title):
 
 def send_email(subject, html_body):
     """
+<<<<<<< HEAD
     "Người đưa thư" phiên bản Microsoft, sử dụng máy chủ SMTP của Office 365.
+=======
+    Gửi email tổng hợp đi.
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
     """
     print("\nChuẩn bị gửi email tổng hợp...")
 
@@ -138,6 +167,10 @@ def send_email(subject, html_body):
     except Exception as e:
         print(f"❌ Lỗi khi gửi email: {e}")
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
 # --- BƯỚC 4: "QUẢN ĐỐC" ĐIỀU PHỐI CÔNG VIỆC ---
 def main():
     """Hàm chính, điều phối toàn bộ quy trình."""
@@ -145,6 +178,10 @@ def main():
     TIMESTAMP_FILE = "last_run_timestamp.txt"
     current_run_timestamp = datetime.now(timezone.utc)
     last_run_timestamp = datetime.fromtimestamp(0, tz=timezone.utc)
+<<<<<<< HEAD
+=======
+
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
     try:
         with open(TIMESTAMP_FILE, "r") as f:
             timestamp_from_file = float(f.read().strip())
@@ -163,10 +200,15 @@ def main():
         try:
             feed = feedparser.parse(feed_info['url'])
             for entry in feed.entries:
+<<<<<<< HEAD
                 # CẢI TIẾN: Dùng calendar.timegm để đảm bảo luôn xử lý thời gian theo UTC
                 published_time_ts = calendar.timegm(entry.published_parsed)
                 published_time = datetime.fromtimestamp(published_time_ts, tz=timezone.utc)
                 
+=======
+                published_time = datetime.fromtimestamp(time.mktime(entry.published_parsed), tz=timezone.utc)
+
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
                 if published_time > last_run_timestamp:
                     print(f"  📰 Phát hiện tin mới: {entry.title}")
                     article_text = get_article_text(entry.link)
@@ -178,16 +220,28 @@ def main():
                         {summary_html}"""
                         summaries_html_list.append(article_block_html)
                         print("    -> Tạm nghỉ 15 giây để chờ lượt API tiếp theo...")
+<<<<<<< HEAD
                         time.sleep(15)
+=======
+                        time.sleep(15) 
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
         except Exception as e:
             print(f"  -> Lỗi khi xử lý RSS feed của {feed_info['name']}: {e}")
 
     if summaries_html_list:
+<<<<<<< HEAD
         # === SỬA LỖI MÚI GIỜ ===
+=======
+        # Chuyển đổi thời gian sang múi giờ Việt Nam (GMT+7)
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
         utc_now = datetime.now(timezone.utc)
         gmt7 = timezone(timedelta(hours=7))
         vn_time = utc_now.astimezone(gmt7)
         run_time_str = vn_time.strftime("%H:%M ngày %d/%m/%Y")
+<<<<<<< HEAD
+=======
+        
+>>>>>>> e491c37fe0dba49406cd8c6bea8dafb53fa5a55d
         subject = f"Bản tin An ninh mạng cập nhật lúc {run_time_str}"
         
         final_body = "<hr style='border: 0; border-top: 1px solid #eee;'>".join(summaries_html_list)
